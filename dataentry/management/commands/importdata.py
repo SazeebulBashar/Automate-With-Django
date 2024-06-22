@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 # from dataentry.models import Student
 from django.apps import apps
 import csv
@@ -13,10 +13,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         file_path = kwargs['file_path']
-        model_name = kwargs['model_name']
+        model_name = kwargs['model_name'].capitalize()
 
         # Search for model in all installed apps
-        for app_config in apps.get_app_config():
+        model =None
+        for app_config in apps.get_app_configs():
             # searching for model
             try:
                 model = apps.get_model(app_config.label, model_name)
@@ -24,10 +25,14 @@ class Command(BaseCommand):
             except LookupError:
                 continue # model not found in this app, continue searching in next app
 
+        if not model:
+            raise CommandError(f"Model '{model_name}' not found.")
+        
+        
         with open(file_path, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                model_name.objects.create(**row)
+                model.objects.create(**row)
                 
         self.stdout.write(self.style.SUCCESS("Data imported successfully"))
         
