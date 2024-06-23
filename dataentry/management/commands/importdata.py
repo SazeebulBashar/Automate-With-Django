@@ -1,15 +1,14 @@
 from django.core.management.base import BaseCommand, CommandError
-# from dataentry.models import Student
 from django.apps import apps
 import csv
-# proposed command --> python manage.py importdata file_path model_name
+# proposed command --> python manage.py importdata <file_path> <model_name>
 
 class Command(BaseCommand):
     help = 'Import data from csv file'
 
     def add_arguments(self, parser):
         parser.add_argument('file_path', type=str, help = "The path of the csv file")
-        parser .add_argument('model_name', type=str, help = "The name of the model")
+        parser.add_argument('model_name', type=str, help = "The name of the model")
 
     def handle(self, *args, **kwargs):
         file_path = kwargs['file_path']
@@ -26,7 +25,7 @@ class Command(BaseCommand):
                 continue # model not found in this app, continue searching in next app
 
         if not model:
-            raise CommandError(f"Model '{model_name}' not found.")
+            raise CommandError(f"Model '{model_name}' was not found.")
         
         
         with open(file_path, 'r') as file:
