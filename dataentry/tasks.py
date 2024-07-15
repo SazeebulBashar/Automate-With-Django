@@ -4,4 +4,4 @@ import time
 @app.task
 def celery_test_task():
     time.sleep(5)
-    return "Tasks executed successfully  from Celery."
+    return "Tasks executed successfully from Celery after 5 Seconds."
